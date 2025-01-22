@@ -1,12 +1,12 @@
 const CACHE_NAME = 'to-do-pwa-cache-v1';
 const FILES_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/app.js',
-    '/manifest.json',
-    '/icons/icon-128.png',
-    '/icons/icon-512.png'
+    '/Lab1-2/',
+    '/Lab1-2/index.html',
+    '/Lab1-2/style.css',
+    '/Lab1-2/app.js',
+    '/Lab1-2/manifest.json',
+    '/Lab1-2/icons/icon-128.png',
+    '/Lab1-2/icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
