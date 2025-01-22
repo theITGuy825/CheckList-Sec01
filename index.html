@@ -23,7 +23,7 @@
         <script>
             if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js', {
-            scope: '/https://github.com/theITGuy825/Lab1-2/'
+            scope: 'https://github.com/theITGuy825/Lab1-2.git'
             })
             .then(reg => console.log('Service Worker Registered'))
             .catch(err => console.error('Service Worker Error:', err));
