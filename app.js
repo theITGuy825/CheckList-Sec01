@@ -34,26 +34,18 @@ window.addEventListener('load', () => {
 // Add Task
 addTaskBtn.addEventListener('click', async () => {
     const task = taskInput.value.trim();
-
     if (task) {
-      const taskInput = document.getElementById("taskInput");
-      const taskText = sanitizeInput(taskInput.value.trim());
-      if (taskText) {
-      await addTaskToFirestore(taskText);
-      renderTasks();
-      taskInput.value = "";
-    }
-    renderTasks();
+        const taskInput = document.getElementById("taskInput");
+        const taskText = sanitizeInput(taskInput.value.trim());
+
+        if (taskText) {
+            await addTaskToFirestore(taskText);
+            renderTasks();
+            taskInput.value = "";
+        }
+        renderTasks();
     }
 });
-
-async function addTaskToFirestore(taskText) {
-  await addDoc(collection(db, "todos"), {
-    text: taskText,
-    completed: false
-  });
-}
- 
 
 // Remove Task
 taskList.addEventListener('click', async (e) => {
@@ -67,11 +59,11 @@ taskList.addEventListener('click', async (e) => {
 
 
 async function renderTasks() {
-  var tasks = await getTasksFromFirestore();
-  taskList.innerHTML = "";
- 
-  tasks.forEach((task, index) => {
-    if(!task.data().completed){
+    var tasks = await getTasksFromFirestore();
+    taskList.innerHTML = "";
+  
+    tasks.forEach((task, index) => {
+      if(!task.data().completed){
         const taskItem = document.createElement("li");
         taskItem.id = task.id;
         taskItem.textContent = task.data().text;
@@ -79,17 +71,24 @@ async function renderTasks() {
       }
     });
   }
- 
-async function getTasksFromFirestore() {
-  var data = await getDocs(collection(db, "todos"));
-  let userData = [];
-  data.forEach((doc) => {
-    userData.push(doc);
+
+  async function addTaskToFirestore(taskText) {
+    await addDoc(collection(db, "todos"), {
+      text: taskText, 
+      completed: false
+    });  
+  }
+
+  async function getTasksFromFirestore() {
+    var data = await getDocs(collection(db, "todos"));
+    let userData = [];
+    data.forEach((doc) => {
+      userData.push(doc);
   });
   return userData;
 }
 
-function sanitizeInput(input) {
+  function sanitizeInput(input) {
     const div = document.createElement("div");
     div.textContent = input;
     return div.innerHTML;
