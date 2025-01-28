@@ -72,15 +72,15 @@ import { doc, getDocs, addDoc, updateDoc, getFirestore, collection } from
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDhpku4RzYDq6Sf6_HsEhn8bgePZeetv9A",
-    authDomain: "webdevtrends-31a7c.firebaseapp.com",
-    projectId: "webdevtrends-31a7c",
-    storageBucket: "webdevtrends-31a7c.firebasestorage.app",
-    messagingSenderId: "791440809739",
-    appId: "1:791440809739:web:721bd554b36c47eee58c0e"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDOEH-lZXEK_lp9WFc1XNrR4Jr5rBbPzvI",
+  authDomain: "checklist-todo-app-a391c.firebaseapp.com",
+  projectId: "checklist-todo-app-a391c",
+  storageBucket: "checklist-todo-app-a391c.firebasestorage.app",
+  messagingSenderId: "966273922595",
+  appId: "1:966273922595:web:2e57caac6005fb3ff52396",
+  measurementId: "G-LPN5SSNXGR"
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
