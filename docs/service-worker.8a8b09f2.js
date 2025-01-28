@@ -1,0 +1,2 @@
+const e=["/lab1-2/","/lab1-2/index.html","/lab1-2/style.css","/lab1-2/app.js","/lab1-2/manifest.json","/lab1-2/icons/icon-128.png","/lab1-2/icons/icon-512.png"];self.addEventListener("install",n=>{n.waitUntil(caches.open("to-do-pwa-cache-v1").then(n=>n.addAll(e)))}),self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(n=>n||fetch(e.request)))});
+//# sourceMappingURL=service-worker.8a8b09f2.js.map
