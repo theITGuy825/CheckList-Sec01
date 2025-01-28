@@ -72,6 +72,7 @@ import { doc, getDocs, addDoc, updateDoc, getFirestore, collection } from
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
   const firebaseConfig = {
     apiKey: "AIzaSyDhpku4RzYDq6Sf6_HsEhn8bgePZeetv9A",
     authDomain: "webdevtrends-31a7c.firebaseapp.com",
