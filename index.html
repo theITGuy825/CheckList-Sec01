@@ -1,42 +1,52 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <meta name="theme-color" content="#0078D7">
- <title>Checklist App</title>
- <link rel="stylesheet" href="style.css">
- <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Planner</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5NX34N9EG" type="module"></script>
-<script type="module">
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-S5NX34N9EG');
-</script>
 <body>
- <h1>My To-Do List</h1>
- <div class="container">
- <input type="text" id="taskInput" placeholder="Enter a new task">
- <button id="addTaskBtn">Add Task</button>
- <ul id="taskList"></ul>
- </div>
- <script src="app.js" type="module"></script>
- <script type="module">
+    <header>
+        <h1>Budget Planner</h1>
+    </header>
 
-const sw = new URL('service-worker.js', import.meta.url)
-if ('serviceWorker' in navigator) {
- const s = navigator.serviceWorker;
- s.register(sw.href, {
- scope: '/CheckList-Sec01/'
- })
- .then(_ => console.log('Service Worker Registered for scope:', sw.href,
-'with', import.meta.url))
- .catch(err => console.error('Service Worker Error:', err));
-}
-</script>
+    <main>
+        <!-- Income Section -->
+        <section>
+            <h2>Add Income</h2>
+            <input type="number" id="incomeInput" placeholder="Enter income amount">
+            <button id="addIncomeBtn">Add Income</button>
+        </section>
+
+        <!-- Expense Section -->
+        <section>
+            <h2>Add Expense</h2>
+            <input type="number" id="expenseAmountInput" placeholder="Enter expense amount">
+            <input type="text" id="expenseCategoryInput" placeholder="Enter category">
+            <button id="addExpenseBtn">Add Expense</button>
+        </section>
+
+        <!-- Lists of Income and Expenses -->
+        <section>
+            <h2>Income List</h2>
+            <ul id="incomeList"></ul>
+
+            <h2>Expense List</h2>
+            <ul id="expenseList"></ul>
+        </section>
+
+        <!-- Summary Section -->
+        <section>
+            <h2>Summary</h2>
+            <p>Total Income: $<span id="totalIncome">0</span></p>
+            <p>Total Expenses: $<span id="totalExpenses">0</span></p>
+            <p>Balance: $<span id="balance">0</span></p>
+        </section>
+    </main>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>

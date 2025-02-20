@@ -1,109 +1,143 @@
-const taskInput = document.getElementById('taskInput');
-const addTaskBtn = document.getElementById('addTaskBtn');
-const taskList = document.getElementById('taskList');
+import { db } from './firebase-config.js';
+import { addDoc, collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 
-// Add Task
-addTaskBtn.addEventListener('click', async () => {
-    const task = taskInput.value.trim();
-    if (task) {
-    const taskInput = document.getElementById("taskInput");
-    const taskText = taskInput.value.trim();
-    if (taskText) {
-    await addTaskToFirestore(taskText);
-    renderTasks();
-    taskInput.value = "";
-    }
-    renderTasks();
-    }
-   });
-   async function addTaskToFirestore(taskText) {
-    await addDoc(collection(db, "todos"), {
-    text: taskText,
-    completed: false
- });
- }
+// DOM Elements
+const incomeInput = document.getElementById('incomeInput');
+const addIncomeBtn = document.getElementById('addIncomeBtn');
+const incomeList = document.getElementById('incomeList');
+const expenseAmountInput = document.getElementById('expenseAmountInput');
+const expenseCategoryInput = document.getElementById('expenseCategoryInput');
+const addExpenseBtn = document.getElementById('addExpenseBtn');
+const expenseList = document.getElementById('expenseList');
+const totalIncomeElem = document.getElementById('totalIncome');
+const totalExpensesElem = document.getElementById('totalExpenses');
+const balanceElem = document.getElementById('balance');
 
- //Retrieving the Todo-List
- async function renderTasks() {
-    var tasks = await getTasksFromFirestore();
-    taskList.innerHTML = "";
-   
-    tasks.forEach((task, index) => {
-    if(!task.data().completed){
-    const taskItem = document.createElement("li");
-    taskItem.id = task.id;
-    taskItem.textContent = task.data().text;
-    taskList.appendChild(taskItem);
-    }
-    });
-    }
-   async function getTasksFromFirestore() {
-    var data = await getDocs(collection(db, "todos"));
-    let userData = [];
-    data.forEach((doc) => {
-    userData.push(doc);
-    });
-    return userData;
-   }
+// Load data on window load
+window.addEventListener('load', async () => {
+    await renderIncome();
+    await renderExpenses();
+    updateSummary();
+});
 
-   //Adding Security and Validation
-   function sanitizeInput(input) {
-    const div = document.createElement("div");
-    div.textContent = input;
-    return div.innerHTML;
-   }
-
-   // Use this function when saving tasks 
-   const taskText = sanitizeInput(taskInput.value.trim());
-
-// Remove Task on Click
-taskList.addEventListener('click', (e) => {
-    if (e.target.tagName === 'LI') {
-        e.target.remove();
+// Add Income
+addIncomeBtn.addEventListener('click', async () => {
+    const incomeAmount = parseFloat(incomeInput.value.trim());
+    if (!isNaN(incomeAmount) && incomeAmount > 0) {
+        await addIncomeToFirestore(incomeAmount);
+        incomeInput.value = '';
+        renderIncome();
+        updateSummary();
+    } else {
+        alert("Please enter a valid income amount.");
     }
 });
 
-//adding Firebase to my main javascript file 
-import { initializeApp } from 'firebase/app';
-import { doc, getDocs, addDoc, updateDoc, getFirestore, collection } from
-"firebase/firestore";
-
-
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDOEH-lZXEK_lp9WFc1XNrR4Jr5rBbPzvI",
-  authDomain: "checklist-todo-app-a391c.firebaseapp.com",
-  projectId: "checklist-todo-app-a391c",
-  storageBucket: "checklist-todo-app-a391c.firebasestorage.app",
-  messagingSenderId: "966273922595",
-  appId: "1:966273922595:web:2e57caac6005fb3ff52396",
-  measurementId: "G-LPN5SSNXGR"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Add Logging to my code 
-import log from "loglevel";
-// Set the log level (trace, debug, info, warn, error)
-log.setLevel("info");
-// Example logs
-log.info("Application started");
-log.debug("Debugging information");
-log.error("An error occurred");
-
-function addTask(task) {
-    try {
-    // Log user action
-    log.info(`Task added: ${task}`);
-    // Add task to the list
-    tasks.push(task);
-    renderTasks();
-    } catch (error) {
-    // Log error
-    log.error("Error adding task", error);
+// Add Expense
+addExpenseBtn.addEventListener('click', async () => {
+    const expenseAmount = parseFloat(expenseAmountInput.value.trim());
+    const expenseCategory = expenseCategoryInput.value.trim();
+    if (!isNaN(expenseAmount) && expenseAmount > 0 && expenseCategory) {
+        await addExpenseToFirestore(expenseAmount, expenseCategory);
+        expenseAmountInput.value = '';
+        expenseCategoryInput.value = '';
+        renderExpenses();
+        updateSummary();
+    } else {
+        alert("Please enter a valid expense amount and category.");
     }
-   }
+});
+
+// Fetch and render incomes
+async function renderIncome() {
+    const incomesSnapshot = await getDocs(collection(db, "incomes"));
+    incomeList.innerHTML = '';
+    let totalIncome = 0;
+
+    incomesSnapshot.forEach(doc => {
+        const incomeItem = document.createElement('li');
+        incomeItem.textContent = `$${doc.data().amount}`;
+        incomeItem.id = doc.id;
+        incomeList.appendChild(incomeItem);
+        totalIncome += doc.data().amount;
+    });
+
+    totalIncomeElem.textContent = totalIncome.toFixed(2);
+}
+
+// Fetch and render expenses
+async function renderExpenses() {
+    const expensesSnapshot = await getDocs(collection(db, "expenses"));
+    expenseList.innerHTML = '';
+    let totalExpenses = 0;
+
+    expensesSnapshot.forEach(doc => {
+        const expenseItem = document.createElement('li');
+        expenseItem.textContent = `$${doc.data().amount} - ${doc.data().category}`;
+        expenseItem.id = doc.id;
+        expenseList.appendChild(expenseItem);
+        totalExpenses += doc.data().amount;
+    });
+
+    totalExpensesElem.textContent = totalExpenses.toFixed(2);
+}
+
+// Update Summary
+function updateSummary() {
+    const totalIncome = parseFloat(totalIncomeElem.textContent);
+    const totalExpenses = parseFloat(totalExpensesElem.textContent);
+    const balance = totalIncome - totalExpenses;
+    balanceElem.textContent = balance.toFixed(2);
+}
+
+// Add Income to Firestore with localStorage fallback
+async function addIncomeToFirestore(amount) {
+    try {
+        // Attempt to add income to Firestore
+        await addDoc(collection(db, "incomes"), {
+            amount: amount,
+        });
+        console.log('Income added to Firebase.');
+    } catch (err) {
+        // If Firebase fails, save to localStorage
+        console.error('Failed to add income to Firebase, saving to localStorage:', err);
+
+        // Retrieve existing incomes from localStorage or initialize as empty array
+        let savedIncomes = JSON.parse(localStorage.getItem('incomes')) || [];
+        
+        // Add new income to the list
+        savedIncomes.push({ amount: amount, date: new Date() });
+
+        // Save the updated list back to localStorage
+        localStorage.setItem('incomes', JSON.stringify(savedIncomes));
+
+        alert('Income saved locally as Firebase is unavailable.');
+    }
+}
+
+// Add Expense to Firestore with localStorage fallback
+async function addExpenseToFirestore(amount, category) {
+    try {
+        // Attempt to add expense to Firestore
+        await addDoc(collection(db, "expenses"), {
+            amount: amount,
+            category: category,
+        });
+        console.log('Expense added to Firebase.');
+    } catch (err) {
+        // If Firebase fails, save to localStorage
+        console.error('Failed to add expense to Firebase, saving to localStorage:', err);
+
+        // Retrieve existing expenses from localStorage or initialize as empty array
+        let savedExpenses = JSON.parse(localStorage.getItem('expenses')) || [];
+        
+        // Add new expense to the list
+        savedExpenses.push({ amount: amount, category: category, date: new Date() });
+
+        // Save the updated list back to localStorage
+        localStorage.setItem('expenses', JSON.stringify(savedExpenses));
+
+        alert('Expense saved locally as Firebase is unavailable.');
+    }
+}
+
