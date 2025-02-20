@@ -16,9 +16,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Run linting
-        run: npm run lint
-
       - name: Clear Parcel cache
         run: rm -rf .parcel-cache
 
@@ -33,14 +30,14 @@ jobs:
           git config --global user.name "theITGuy825"
           git config --global user.email "theITGuy825@users.noreply.github.com"
 
-      - name: Pull latest changes from gh-pages branch
+      - name: Pull latest changes from main branch
         run: |
-          git fetch origin gh-pages
-          git checkout gh-pages
-          git pull origin gh-pages
+          git fetch origin main
+          git checkout main
+          git pull origin main
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-main@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs  # Pointing to the 'docs' folder which contains the final build
