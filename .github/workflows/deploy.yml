@@ -8,28 +8,44 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Install Dependencies (if any)
-        run: |
-          if [ -f package.json ]; then
-            npm install
-          fi
+      - name: Run linting
+        run: npm run lint
 
-      - name: Build Project (if any build step exists)
+      - name: Clear Parcel cache
+        run: rm -rf .parcel-cache
+
+      - name: Build Project
         run: |
-          if [ -f package.json ]; then
-            npm run build
-          fi
+          npm run build
+          ls -l ./docs # Verify contents of the build folder (docs in this case)
+          cat ./docs/index.html # Check if the build output is correct
+
+      - name: Setup Git config
+        run: |
+          git config --global user.name "theITGuy825"
+          git config --global user.email "theITGuy825@users.noreply.github.com"
+
+      - name: Pull latest changes from gh-pages branch
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+          git pull origin gh-pages
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist # Replace with your build output directory
+          publish_dir: ./docs  # Pointing to the 'docs' folder which contains the final build
+          force_orphan: true   # Ensure a clean deploy (no history from other branches)
+          allow_empty_commit: true # Allow for an empty commit if necessary
 
       - name: Upload logs
         run: |
